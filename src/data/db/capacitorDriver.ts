@@ -7,8 +7,21 @@ const DATABASE_NAME = 'plaatsbeschrijving';
 /**
  * The device driver. The same plugin backs the browser during `npm run dev`
  * through jeep-sqlite, so Flow B can be built and tested without a phone.
+ *
+ * Memoised because there is one underlying connection: a second driver over it
+ * would keep its own transaction depth, and two drivers each opening what they
+ * think is the outer transaction fails with "cannot start a transaction within
+ * a transaction". React StrictMode mounts providers twice, so this is the
+ * normal case in development, not an edge one.
  */
-export async function createCapacitorSqlDriver(): Promise<SqlDriver> {
+let driverPromise: Promise<SqlDriver> | null = null;
+
+export function createCapacitorSqlDriver(): Promise<SqlDriver> {
+  driverPromise ??= openDriver();
+  return driverPromise;
+}
+
+async function openDriver(): Promise<SqlDriver> {
   const sqlite = new SQLiteConnection(CapacitorSQLite);
 
   if (Capacitor.getPlatform() === 'web') {
@@ -23,6 +36,10 @@ export async function createCapacitorSqlDriver(): Promise<SqlDriver> {
   await connection.open();
 
   let depth = 0;
+  // Transactions are serialised: SQLite has one write transaction at a time, and
+  // two overlapping calls would otherwise both think they own the outer one.
+  // Awaits inside a transaction make that interleaving easy to hit.
+  let queue: Promise<unknown> = Promise.resolve();
 
   const driver: SqlDriver = {
     async execute(sql, params = []) {
@@ -34,27 +51,14 @@ export async function createCapacitorSqlDriver(): Promise<SqlDriver> {
       return (result.values ?? []) as never;
     },
 
-    async transaction(fn) {
-      const isOuter = depth === 0;
-      const savepoint = `sp_${depth}`;
-      await connection.execute(isOuter ? 'BEGIN;' : `SAVEPOINT ${savepoint};`, false);
-      depth += 1;
+    transaction(fn) {
+      // A nested call is already inside the queued outer transaction; queueing
+      // it again would deadlock on the transaction that is waiting for it.
+      if (depth > 0) return runTransaction(fn);
 
-      try {
-        const value = await fn(driver);
-        depth -= 1;
-        await connection.execute(isOuter ? 'COMMIT;' : `RELEASE ${savepoint};`, false);
-        if (isOuter && Capacitor.getPlatform() === 'web') {
-          // The web store only reaches IndexedDB when it is saved explicitly;
-          // without this a browser reload loses the inspection.
-          await sqlite.saveToStore(DATABASE_NAME);
-        }
-        return value;
-      } catch (error) {
-        depth -= 1;
-        await connection.execute(isOuter ? 'ROLLBACK;' : `ROLLBACK TO ${savepoint};`, false);
-        throw error;
-      }
+      const result = queue.then(() => runTransaction(fn));
+      queue = result.catch(() => undefined);
+      return result;
     },
 
     async close() {
@@ -62,6 +66,48 @@ export async function createCapacitorSqlDriver(): Promise<SqlDriver> {
       await sqlite.closeConnection(DATABASE_NAME, false);
     },
   };
+
+  async function runTransaction<T>(fn: (tx: SqlDriver) => Promise<T>): Promise<T> {
+      // The outer level goes through the plugin's own transaction API rather
+      // than a raw BEGIN: the plugin already wraps each execute in a
+      // transaction, so issuing BEGIN here fails with "cannot start a
+      // transaction within a transaction". Nested levels use savepoints, which
+      // it passes through untouched.
+      const isOuter = depth === 0;
+      const savepoint = `sp_${depth}`;
+
+      if (isOuter) {
+        await connection.beginTransaction();
+      } else {
+        await connection.run(`SAVEPOINT ${savepoint}`, [], false);
+      }
+      depth += 1;
+
+      try {
+        const value = await fn(driver);
+        depth -= 1;
+
+        if (isOuter) {
+          await connection.commitTransaction();
+          if (Capacitor.getPlatform() === 'web') {
+            // The web store only reaches IndexedDB when it is saved explicitly;
+            // without this a browser reload loses the inspection.
+            await sqlite.saveToStore(DATABASE_NAME);
+          }
+        } else {
+          await connection.run(`RELEASE ${savepoint}`, [], false);
+        }
+        return value;
+      } catch (error) {
+        depth -= 1;
+        if (isOuter) {
+          await connection.rollbackTransaction();
+        } else {
+          await connection.run(`ROLLBACK TO ${savepoint}`, [], false);
+        }
+        throw error;
+    }
+  }
 
   return driver;
 }

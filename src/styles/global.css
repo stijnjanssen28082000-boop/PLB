@@ -131,8 +131,8 @@ button {
 .app-header {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: calc(var(--safe-top) + var(--space-3)) var(--space-4) var(--space-3);
+  gap: var(--space-2);
+  padding: calc(var(--safe-top) + var(--space-2)) var(--space-3) var(--space-2);
   background: var(--color-brand);
   color: var(--color-brand-text);
   position: sticky;
@@ -140,14 +140,27 @@ button {
   z-index: 10;
 }
 
+/*
+ * The title has to survive a long room name next to the language toggle and the
+ * sync status on a 390px phone, so it shrinks and ellipsises while the controls
+ * keep their full touch targets.
+ */
 .app-header__title {
-  flex: 1;
+  flex: 1 1 auto;
   min-width: 0;
   font-size: var(--font-size-lg);
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.app-header__back {
+  flex: 0 0 auto;
+  min-width: var(--touch-min);
+  padding: var(--space-2);
+  font-size: var(--font-size-xl);
+  line-height: 1;
 }
 
 .app-content {
@@ -289,11 +302,13 @@ button {
 }
 
 .room-card__name {
+  display: block;
   font-size: var(--font-size-lg);
   font-weight: 600;
 }
 
 .room-card__meta {
+  display: block;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
@@ -369,6 +384,14 @@ button {
 .field__textarea {
   min-height: calc(var(--touch-min) * 2);
   resize: vertical;
+}
+
+/* The browser default placeholder is light grey on white, exactly the
+   low-contrast text C.2 principle 3 rules out. */
+.field__input::placeholder,
+.field__textarea::placeholder {
+  color: var(--color-text-muted);
+  opacity: 1;
 }
 
 /* Sub-attributes are collapsed by default so they stay out of the fast path. */
@@ -472,6 +495,23 @@ button {
 }
 
 /* --- test environment banner (docs/environments.md D.5) ------------------- */
+
+/*
+ * Flow E asks for a small, always-visible status icon. On a narrow phone the
+ * coloured dot carries it alone — the word would crowd out the room name, and
+ * the state stays available to a screen reader through the button's label.
+ */
+.sync-indicator__label {
+  display: none;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+}
+
+@media (min-width: 520px) {
+  .sync-indicator__label {
+    display: inline;
+  }
+}
 
 .test-banner {
   padding: var(--space-2) var(--space-4);

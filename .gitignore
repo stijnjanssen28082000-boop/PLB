@@ -24,3 +24,4 @@ ios/
 
 supabase/.temp/
 supabase/.branches/
+public/assets/sql-wasm.wasm
