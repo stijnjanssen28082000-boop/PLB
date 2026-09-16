@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "Plaatsbeschrijving",
+    "testBanner": "TESTOMGEVING — deze gegevens zijn niet echt"
+  },
+  "common": {
+    "back": "Terug",
+    "next": "Volgende",
+    "previous": "Vorige",
+    "cancel": "Annuleren",
+    "confirm": "Bevestigen",
+    "save": "Bewaren",
+    "delete": "Verwijderen",
+    "add": "Toevoegen",
+    "close": "Sluiten",
+    "of": "van",
+    "optional": "optioneel"
+  },
+  "language": {
+    "label": "Taal",
+    "change": "Taal wijzigen",
+    "nl": "NL",
+    "fr": "FR",
+    "en": "EN",
+    "nlFull": "Nederlands",
+    "frFull": "Frans",
+    "enFull": "Engels"
+  },
+  "condition": {
+    "good": "Goed",
+    "traces_of_use": "Gebruikssporen",
+    "damaged": "Beschadigd",
+    "not_applicable": "N.v.t.",
+    "not_inspected": "Niet nagekeken"
+  },
+  "rooms": {
+    "title": "Ruimtes",
+    "add": "Ruimte toevoegen",
+    "empty": "Nog geen ruimtes. Voeg de eerste ruimte toe om te beginnen.",
+    "progress": "{{completed}} van {{total}} ruimtes afgerond",
+    "status": {
+      "not_started": "Niet gestart",
+      "in_progress": "Bezig",
+      "completed": "Afgerond"
+    },
+    "elementsRemaining_one": "Nog {{count}} element",
+    "elementsRemaining_other": "Nog {{count}} elementen",
+    "chooseType": "Welk soort ruimte?",
+    "nameLabel": "Naam van de ruimte",
+    "namePlaceholder": "bv. Slaapkamer 1"
+  },
+  "element": {
+    "counter": "Element {{current}} van {{total}}",
+    "chooseCondition": "Wat is de toestand?",
+    "description": "Beschrijving",
+    "descriptionPlaceholder": "Beschrijf wat je vaststelt",
+    "subAttributes": "Extra gegevens",
+    "photoRequired": "Foto verplicht bij deze toestand",
+    "photoCount_one": "{{count}} foto",
+    "photoCount_other": "{{count}} foto's",
+    "addPhoto": "Foto nemen",
+    "removePhoto": "Foto verwijderen",
+    "removePhotoConfirm": "Deze foto verwijderen?",
+    "done": "Ruimte afgerond",
+    "nextElement": "Volgend element",
+    "nextRoom": "Volgende ruimte"
+  },
+  "sync": {
+    "offline": "Offline",
+    "syncing": "Synchroniseren",
+    "synced": "Gesynchroniseerd",
+    "offlineExplanation": "Alles is bewaard op je toestel. Zodra er verbinding is, wordt het verstuurd.",
+    "syncingExplanation": "Bezig met versturen naar de server.",
+    "syncedExplanation": "Alles staat op de server.",
+    "pendingInspections_one": "{{count}} plaatsbeschrijving wacht op verzending",
+    "pendingInspections_other": "{{count}} plaatsbeschrijvingen wachten op verzending",
+    "photosUploaded": "Foto's: {{uploaded}} van {{total}} verstuurd",
+    "retrying": "Wordt opnieuw geprobeerd zodra er verbinding is.",
+    "allDone": "Er wacht niets meer op verzending."
+  },
+  "errors": {
+    "savingFailed": "We konden dit niet bewaren. Probeer het opnieuw.",
+    "photoFailed": "De foto kon niet worden opgeslagen. Probeer opnieuw.",
+    "notFound": "We vinden deze plaatsbeschrijving niet terug.",
+    "locked": "Deze plaatsbeschrijving is ondertekend en kan niet meer gewijzigd worden."
+  }
+}

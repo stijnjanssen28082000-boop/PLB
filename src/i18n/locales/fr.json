@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "État des lieux",
+    "testBanner": "ENVIRONNEMENT DE TEST — ces données ne sont pas réelles"
+  },
+  "common": {
+    "back": "Retour",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "save": "Enregistrer",
+    "delete": "Supprimer",
+    "add": "Ajouter",
+    "close": "Fermer",
+    "of": "sur",
+    "optional": "facultatif"
+  },
+  "language": {
+    "label": "Langue",
+    "change": "Changer de langue",
+    "nl": "NL",
+    "fr": "FR",
+    "en": "EN",
+    "nlFull": "Néerlandais",
+    "frFull": "Français",
+    "enFull": "Anglais"
+  },
+  "condition": {
+    "good": "Bon état",
+    "traces_of_use": "Traces d'usage",
+    "damaged": "Dégradé",
+    "not_applicable": "S.O.",
+    "not_inspected": "Non vérifié"
+  },
+  "rooms": {
+    "title": "Pièces",
+    "add": "Ajouter une pièce",
+    "empty": "Aucune pièce pour l'instant. Ajoutez la première pièce pour commencer.",
+    "progress": "{{completed}} pièces sur {{total}} terminées",
+    "status": {
+      "not_started": "Non commencée",
+      "in_progress": "En cours",
+      "completed": "Terminée"
+    },
+    "elementsRemaining_one": "Encore {{count}} élément",
+    "elementsRemaining_other": "Encore {{count}} éléments",
+    "chooseType": "Quel type de pièce ?",
+    "nameLabel": "Nom de la pièce",
+    "namePlaceholder": "p. ex. Chambre 1"
+  },
+  "element": {
+    "counter": "Élément {{current}} sur {{total}}",
+    "chooseCondition": "Quel est l'état ?",
+    "description": "Description",
+    "descriptionPlaceholder": "Décrivez ce que vous constatez",
+    "subAttributes": "Informations complémentaires",
+    "photoRequired": "Photo obligatoire pour cet état",
+    "photoCount_one": "{{count}} photo",
+    "photoCount_other": "{{count}} photos",
+    "addPhoto": "Prendre une photo",
+    "removePhoto": "Supprimer la photo",
+    "removePhotoConfirm": "Supprimer cette photo ?",
+    "done": "Pièce terminée",
+    "nextElement": "Élément suivant",
+    "nextRoom": "Pièce suivante"
+  },
+  "sync": {
+    "offline": "Hors ligne",
+    "syncing": "Synchronisation",
+    "synced": "Synchronisé",
+    "offlineExplanation": "Tout est enregistré sur votre appareil. L'envoi se fera dès qu'il y aura une connexion.",
+    "syncingExplanation": "Envoi vers le serveur en cours.",
+    "syncedExplanation": "Tout se trouve sur le serveur.",
+    "pendingInspections_one": "{{count}} état des lieux en attente d'envoi",
+    "pendingInspections_other": "{{count}} états des lieux en attente d'envoi",
+    "photosUploaded": "Photos : {{uploaded}} sur {{total}} envoyées",
+    "retrying": "Nouvelle tentative dès qu'il y aura une connexion.",
+    "allDone": "Plus rien n'attend d'être envoyé."
+  },
+  "errors": {
+    "savingFailed": "Nous n'avons pas pu enregistrer. Réessayez.",
+    "photoFailed": "La photo n'a pas pu être enregistrée. Réessayez.",
+    "notFound": "Nous ne retrouvons pas cet état des lieux.",
+    "locked": "Cet état des lieux est signé et ne peut plus être modifié."
+  }
+}

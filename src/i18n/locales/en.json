@@ -1,0 +1,87 @@
+{
+  "app": {
+    "name": "Property inspection",
+    "testBanner": "TEST ENVIRONMENT — this data is not real"
+  },
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "delete": "Delete",
+    "add": "Add",
+    "close": "Close",
+    "of": "of",
+    "optional": "optional"
+  },
+  "language": {
+    "label": "Language",
+    "change": "Change language",
+    "nl": "NL",
+    "fr": "FR",
+    "en": "EN",
+    "nlFull": "Dutch",
+    "frFull": "French",
+    "enFull": "English"
+  },
+  "condition": {
+    "good": "Good",
+    "traces_of_use": "Signs of use",
+    "damaged": "Damaged",
+    "not_applicable": "N/A",
+    "not_inspected": "Not inspected"
+  },
+  "rooms": {
+    "title": "Rooms",
+    "add": "Add room",
+    "empty": "No rooms yet. Add the first room to get started.",
+    "progress": "{{completed}} of {{total}} rooms finished",
+    "status": {
+      "not_started": "Not started",
+      "in_progress": "In progress",
+      "completed": "Finished"
+    },
+    "elementsRemaining_one": "{{count}} element left",
+    "elementsRemaining_other": "{{count}} elements left",
+    "chooseType": "What kind of room?",
+    "nameLabel": "Room name",
+    "namePlaceholder": "e.g. Bedroom 1"
+  },
+  "element": {
+    "counter": "Element {{current}} of {{total}}",
+    "chooseCondition": "What condition is it in?",
+    "description": "Description",
+    "descriptionPlaceholder": "Describe what you observe",
+    "subAttributes": "Extra details",
+    "photoRequired": "A photo is required for this condition",
+    "photoCount_one": "{{count}} photo",
+    "photoCount_other": "{{count}} photos",
+    "addPhoto": "Take photo",
+    "removePhoto": "Remove photo",
+    "removePhotoConfirm": "Remove this photo?",
+    "done": "Room finished",
+    "nextElement": "Next element",
+    "nextRoom": "Next room"
+  },
+  "sync": {
+    "offline": "Offline",
+    "syncing": "Syncing",
+    "synced": "Synced",
+    "offlineExplanation": "Everything is saved on your device. It will be sent as soon as there is a connection.",
+    "syncingExplanation": "Sending to the server.",
+    "syncedExplanation": "Everything is on the server.",
+    "pendingInspections_one": "{{count}} inspection waiting to be sent",
+    "pendingInspections_other": "{{count}} inspections waiting to be sent",
+    "photosUploaded": "Photos: {{uploaded}} of {{total}} sent",
+    "retrying": "We will try again as soon as there is a connection.",
+    "allDone": "Nothing is waiting to be sent."
+  },
+  "errors": {
+    "savingFailed": "We could not save this. Please try again.",
+    "photoFailed": "The photo could not be saved. Please try again.",
+    "notFound": "We cannot find this inspection.",
+    "locked": "This inspection has been signed and can no longer be changed."
+  }
+}
