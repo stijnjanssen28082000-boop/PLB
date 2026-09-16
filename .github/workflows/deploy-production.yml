@@ -1,0 +1,46 @@
+name: Deploy to production
+
+# docs/environments.md D.11. Triggered by a version tag rather than by every
+# merge into main: D.9 asks for production promotion to be deliberate, and a tag
+# is an explicit act where a merge is easy to do by reflex.
+#
+# Never promote from development straight to production — test is the mandatory
+# step in between, "also when it is only a small fix" (D.9).
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    # Scoped to the production secrets only. Add a required reviewer on this
+    # GitHub environment to get a manual gate in front of production.
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse to deploy anything that is not on main
+        run: |
+          git fetch origin main --depth=1
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "This commit is not on main. Production mirrors main (D.11)." >&2
+            exit 1
+          fi
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Push migrations to the production project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          supabase link --project-ref "$PROJECT_REF"
+          supabase db push

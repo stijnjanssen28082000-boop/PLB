@@ -1,0 +1,45 @@
+name: Deploy to test
+
+# docs/environments.md D.11: merging into develop updates the test environment.
+# Only Supabase migrations are automated for now — the mobile build stays manual
+# until releases get frequent enough to be worth the signing setup (D.11).
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-test
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    # A GitHub environment, so this job can only read the test secrets. The
+    # production workflow can only read the production ones — the enforceable
+    # version of the separation in D.3-D.4.
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Push migrations to the test project
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          supabase link --project-ref "$PROJECT_REF"
+          supabase db push
+
+      - name: Update the global room template starter kit
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          PROJECT_REF: ${{ secrets.SUPABASE_PROJECT_REF }}
+        run: |
+          supabase link --project-ref "$PROJECT_REF"
+          psql "$(supabase db url --linked)" -v ON_ERROR_STOP=1 -f supabase/seed.sql
