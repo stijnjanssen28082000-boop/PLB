@@ -24,7 +24,8 @@
     "en": "EN",
     "nlFull": "Dutch",
     "frFull": "French",
-    "enFull": "English"
+    "enFull": "English",
+    "reportLanguage": "Language of the inspection and the report"
   },
   "condition": {
     "good": "Good",

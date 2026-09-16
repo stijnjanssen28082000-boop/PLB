@@ -83,6 +83,10 @@ Twee verschillende taalkeuzes, niet met elkaar te verwarren in de UX:
 
 **Regel voor Claude Code**: bouw de taalkeuze-toggle in Flow B mee vanaf de eerste versie van dat scherm — dit hoort niet als losse "instellingen"-taak achteraf, want net Flow B is waar de taalkeuze het meest gebruikt zal worden (huurder leest mee tijdens de rondgang).
 
+**[verduidelijkt tijdens de bouw] Wat de toggle in Flow B precies wijzigt**: hierboven stonden twee taalniveaus beschreven zonder te zeggen welk niveau de header-toggle aanstuurt. Beslissing: de toggle wijzigt **`inspections.language`** — dus zowel de app-chrome als de elementnamen en standaardteksten op het scherm, én de taal van het PDF-rapport en de mails. Reden: het doel dat hierboven staat ("mocht de huurder liever meelezen in zijn eigen taal") wordt niet gehaald als enkel de knoppen vertalen en de vaststellingen zelf Nederlands blijven.
+
+Gevolg voor reeds ingevulde beschrijvingen: bij een taalwissel worden enkel de beschrijvingen met `description_source = 'default'` (3.7) hervertaald. Tekst die de plaatsbeschrijver zelf typte of aanpaste (`manual`) blijft ongewijzigd — dat is zijn vaststelling, geen sjabloontekst. Zonder deze regel zou een Franstalig rapport Nederlandse standaardzinnen bevatten die de plaatsbeschrijver nooit geschreven heeft.
+
 ---
 
 ### Flow G — Partijen: rapport bekijken en opmerkingen geven [v7, nieuw]

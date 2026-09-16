@@ -10,6 +10,7 @@ import {
   listRoomElements,
   listRooms,
   setElementCondition,
+  retranslateDefaultDescriptions,
 } from './inspectionRepository';
 import { addPhoto, removePhoto } from './photoRepository';
 import { toSqlJson } from '@/data/db/driver';
@@ -282,6 +283,49 @@ describe('local data layer', () => {
         { entity_type: 'photos', operation: 'upsert' },
         { entity_type: 'photos', operation: 'upload_file' },
       ]);
+    });
+  });
+
+  describe('changing the inspection language', () => {
+    it('re-translates untouched standard descriptions but never edited ones', async () => {
+      const { roomId, elementIds } = await createBedroom(db);
+      const template = bedroomTemplate();
+
+      // The north wall keeps the template's standard wording.
+      await setElementCondition(
+        db,
+        {
+          elementId: elementIds[0]!,
+          roomId,
+          condition: 'good',
+          description: template.elements[0]!.default_description_translations.nl,
+          descriptionSource: 'default',
+        },
+        CONTEXT,
+      );
+
+      // The east wall carries something the inspector wrote.
+      await setElementCondition(
+        db,
+        {
+          elementId: elementIds[1]!,
+          roomId,
+          condition: 'damaged',
+          description: 'Barst van 30 cm naast het raam',
+          descriptionSource: 'manual',
+        },
+        CONTEXT,
+      );
+
+      const updated = await retranslateDefaultDescriptions(db, INSPECTION, 'fr', CONTEXT);
+      expect(updated).toBe(1);
+
+      const elements = await listRoomElements(db, roomId);
+      expect(elements[0]?.description).toBe(
+        template.elements[0]!.default_description_translations.fr,
+      );
+      // The inspector's own finding is their text, not boilerplate to rewrite.
+      expect(elements[1]?.description).toBe('Barst van 30 cm naast het raam');
     });
   });
 

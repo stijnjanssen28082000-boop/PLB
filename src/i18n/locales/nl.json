@@ -24,7 +24,8 @@
     "en": "EN",
     "nlFull": "Nederlands",
     "frFull": "Frans",
-    "enFull": "Engels"
+    "enFull": "Engels",
+    "reportLanguage": "Taal van de plaatsbeschrijving en het rapport"
   },
   "condition": {
     "good": "Goed",

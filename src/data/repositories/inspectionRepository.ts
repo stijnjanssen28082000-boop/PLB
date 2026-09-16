@@ -1,13 +1,15 @@
 import { fromSqlBool, fromSqlJson, toSqlBool, toSqlJson, type SqlDriver } from '@/data/db/driver';
 import { transitionInspectionStatus } from '@/domain/inspectionStatus';
-import type {
-  ElementCondition,
-  ElementDefinition,
-  Inspection,
-  InspectionStatus,
-  Room,
-  RoomElement,
-  RoomTemplate,
+import {
+  translate,
+  type ElementCondition,
+  type ElementDefinition,
+  type Inspection,
+  type InspectionStatus,
+  type Language,
+  type Room,
+  type RoomElement,
+  type RoomTemplate,
 } from '@/domain/types';
 import { upsertRow, utcNow, type WriteContext } from './persist';
 
@@ -234,6 +236,63 @@ async function countPhotosPerElement(
     [roomId],
   );
   return new Map(rows.map((row) => [row.room_element_id, row.total]));
+}
+
+/**
+ * Re-translates the standard descriptions after the inspection language changes.
+ *
+ * Only rows still marked `default` are touched. A description the inspector
+ * typed or edited is their finding and is never rewritten — but leaving the
+ * untouched boilerplate behind would put Dutch sentences the inspector never
+ * wrote into a French report. This is what `description_source` is for
+ * (docs/datamodel.md 3.7).
+ */
+export async function retranslateDefaultDescriptions(
+  db: SqlDriver,
+  inspectionId: string,
+  language: Language,
+  context: WriteContext,
+): Promise<number> {
+  const rows = await db.query<{ id: string; room_id: string; element_key: string; room_template_id: string }>(
+    `select e.id, e.room_id, e.element_key, r.room_template_id
+       from room_elements e
+       join rooms r on r.id = e.room_id
+      where r.inspection_id = ?
+        and e.description_source = 'default'
+        and e.deleted_at is null and r.deleted_at is null`,
+    [inspectionId],
+  );
+  if (rows.length === 0) return 0;
+
+  const templates = new Map<string, RoomTemplate | null>();
+  let updated = 0;
+
+  await db.transaction(async (tx) => {
+    for (const row of rows) {
+      if (!templates.has(row.room_template_id)) {
+        templates.set(row.room_template_id, await getRoomTemplate(tx, row.room_template_id));
+      }
+      const definition = templates
+        .get(row.room_template_id)
+        ?.elements.find((candidate) => candidate.key === row.element_key);
+      if (!definition) continue;
+
+      await upsertRow(
+        tx,
+        'room_elements',
+        {
+          id: row.id,
+          description: translate(definition.default_description_translations, language),
+          device_id: context.deviceId,
+          client_updated_at: (context.now ?? utcNow)(),
+        },
+        context,
+      );
+      updated += 1;
+    }
+  });
+
+  return updated;
 }
 
 /** Changes the inspection status, refusing any transition the flow forbids. */

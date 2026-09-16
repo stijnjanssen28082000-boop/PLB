@@ -11,14 +11,17 @@ import {
   listRooms,
   setElementCondition,
   setElementSubAttributes,
+  retranslateDefaultDescriptions,
 } from '@/data/repositories/inspectionRepository';
 import { addPhoto, listPhotosForElement, removePhoto } from '@/data/repositories/photoRepository';
 import { upsertRow } from '@/data/repositories/persist';
 import { capturePhoto } from '@/platform/camera';
+import { setInterfaceLanguage } from '@/i18n';
 import { newId } from '@/platform/device';
 import {
   translate,
   type ElementCondition,
+  type Language,
   type Inspection,
   type Photo,
   type Room,
@@ -73,6 +76,22 @@ export function InspectionScreen({ inspectionId }: { inspectionId: string }) {
   useEffect(() => {
     void refresh();
   }, [refresh]);
+
+  /**
+   * The Flow B toggle switches the inspection's language, not just the chrome.
+   * C.3b puts it in this header so the tenant can read along, and that only
+   * works if the element names and standard descriptions change with it — which
+   * makes it the report and mail language too (C.3b level 2).
+   */
+  const handleLanguageChange = useCallback(
+    async (language: Language) => {
+      await upsertRow(db, 'inspections', { id: inspectionId, language }, writeContext);
+      await retranslateDefaultDescriptions(db, inspectionId, language, writeContext);
+      await setInterfaceLanguage(language);
+      await refresh();
+    },
+    [db, inspectionId, refresh, writeContext],
+  );
 
   const templatesById = useMemo(
     () => new Map(templates.map((template) => [template.id, template])),
@@ -155,7 +174,11 @@ export function InspectionScreen({ inspectionId }: { inspectionId: string }) {
   const header = (
     <header className="app-header">
       <div className="app-header__title">{t('rooms.title')}</div>
-      <LanguageToggle />
+      <LanguageToggle
+        value={inspection.language}
+        onChange={(language) => void handleLanguageChange(language)}
+        label={t('language.reportLanguage')}
+      />
       <SyncIndicator pendingCount={pendingSyncCount} />
     </header>
   );
@@ -262,7 +285,11 @@ export function InspectionScreen({ inspectionId }: { inspectionId: string }) {
         {/* No title here: the element name is the h1 just below, and a second
             copy next to the controls would only truncate. */}
         <div className="app-header__title" />
-        <LanguageToggle />
+        <LanguageToggle
+          value={inspection.language}
+          onChange={(language) => void handleLanguageChange(language)}
+          label={t('language.reportLanguage')}
+        />
         <SyncIndicator pendingCount={pendingSyncCount} />
       </header>
 

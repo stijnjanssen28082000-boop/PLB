@@ -24,7 +24,8 @@
     "en": "EN",
     "nlFull": "Néerlandais",
     "frFull": "Français",
-    "enFull": "Anglais"
+    "enFull": "Anglais",
+    "reportLanguage": "Langue de l'état des lieux et du rapport"
   },
   "condition": {
     "good": "Bon état",
