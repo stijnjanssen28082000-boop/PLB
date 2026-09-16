@@ -44,13 +44,13 @@ export function ConditionSelector({
               } as React.CSSProperties
             }
           >
-            <span>{t(`condition.${condition}`)}</span>
             {/* A non-colour confirmation of which one is chosen. */}
             {isSelected && (
               <span className="condition-button__check" aria-hidden="true">
                 ✓
               </span>
             )}
+            <span>{t(`condition.${condition}`)}</span>
           </button>
         );
       })}

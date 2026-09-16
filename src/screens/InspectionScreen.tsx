@@ -283,8 +283,8 @@ export function InspectionScreen({ inspectionId }: { inspectionId: string }) {
           <span aria-hidden="true">‹</span>
         </button>
         {/* No title here: the element name is the h1 just below, and a second
-            copy next to the controls would only truncate. */}
-        <div className="app-header__title" />
+            copy next to the controls would only truncate. The controls sit
+            right-aligned instead of leaving a gap where a title would be. */}
         <LanguageToggle
           value={inspection.language}
           onChange={(language) => void handleLanguageChange(language)}

@@ -66,10 +66,10 @@ export function ElementScreen({
         {/* The room name lives here rather than in the header: next to the
             language toggle and the sync status it would truncate to nothing on
             a phone, and there is room for it above the element name. */}
-        <p className="progress__label">
+        <p className="eyebrow">
           {roomName} · {t('element.counter', { current: position, total })}
         </p>
-        <h1 style={{ marginBottom: 16 }}>
+        <h1 className="element-title">
           {translate(definition.label_translations, reportLanguage)}
         </h1>
 
@@ -80,7 +80,7 @@ export function ElementScreen({
         />
 
         {photoMissing && (
-          <p className="notice notice--required" role="status" style={{ marginTop: 16 }}>
+          <p className="notice notice--required" role="status">
             {t('element.photoRequired')}
           </p>
         )}
@@ -109,19 +109,8 @@ export function ElementScreen({
 
             <button
               type="button"
-              className="button"
+              className={`button button--wide${photoMissing ? ' button--photo-required' : ''}`}
               onClick={onTakePhoto}
-              style={{
-                width: '100%',
-                minHeight: 'var(--touch-primary)',
-                marginBottom: 16,
-                ...(photoMissing
-                  ? {
-                      borderColor: 'var(--color-condition-damaged)',
-                      borderWidth: 3,
-                    }
-                  : {}),
-              }}
             >
               {t('element.addPhoto')}
               {photos.length > 0 && ` · ${t('element.photoCount', { count: photos.length })}`}
@@ -143,7 +132,7 @@ export function ElementScreen({
             {/* Sub-attributes stay collapsed: useful, but never in the way of
                 the fast path (Flow B, step 2). */}
             {definition.sub_attributes.length > 0 && (
-              <details className="disclosure" style={{ marginTop: 16 }}>
+              <details className="disclosure">
                 <summary>
                   {t('element.subAttributes')} · {t('common.optional')}
                 </summary>
@@ -197,10 +186,9 @@ export function ElementScreen({
       <div className="action-bar">
         <button
           type="button"
-          className="button"
+          className="button button--secondary"
           onClick={onPrevious}
           disabled={position === 1}
-          style={{ minHeight: 'var(--touch-primary)' }}
         >
           {t('common.previous')}
         </button>

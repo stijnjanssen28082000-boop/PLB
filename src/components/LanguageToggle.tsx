@@ -25,37 +25,19 @@ export function LanguageToggle({
   const { t } = useTranslation();
 
   return (
-    <div
-      role="group"
-      aria-label={label ?? t('language.change')}
-      style={{ display: 'flex', gap: 4 }}
-    >
-      {LANGUAGES.map((language) => {
-        const isActive = value === language;
-        return (
-          <button
-            key={language}
-            type="button"
-            className="button button--ghost"
-            aria-pressed={isActive}
-            onClick={() => onChange(language)}
-            style={{
-              minWidth: 48,
-              padding: '8px 10px',
-              color: 'inherit',
-              // The active language is marked by weight and an underline as well
-              // as by opacity, so it does not rely on a colour difference.
-              opacity: isActive ? 1 : 0.75,
-              fontWeight: isActive ? 800 : 600,
-              textDecoration: isActive ? 'underline' : 'none',
-              textUnderlineOffset: 4,
-            }}
-          >
-            <span aria-hidden="true">{t(`language.${language}`)}</span>
-            <span className="visually-hidden">{t(`language.${language}Full`)}</span>
-          </button>
-        );
-      })}
+    <div className="language-toggle" role="group" aria-label={label ?? t('language.change')}>
+      {LANGUAGES.map((language) => (
+        <button
+          key={language}
+          type="button"
+          className="language-toggle__option"
+          aria-pressed={value === language}
+          onClick={() => onChange(language)}
+        >
+          <span aria-hidden="true">{t(`language.${language}`)}</span>
+          <span className="visually-hidden">{t(`language.${language}Full`)}</span>
+        </button>
+      ))}
     </div>
   );
 }

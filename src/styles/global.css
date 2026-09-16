@@ -1,16 +1,26 @@
+@import './fonts.css';
+
 /*
  * Field-use styles (docs/ux.md C.2). Mirrors src/styles/tokens.ts — change the
  * colours there first, the contrast test guards them.
  *
  * No component library: C.5 warns that generic kits ship touch targets sized for
  * a mouse, and retro-fitting 48px onto them is more work than starting here.
+ *
+ * Poppins is geometric and runs optically smaller than a system UI font at the
+ * same size, so the type scale is a step larger than a desktop app would use and
+ * headings sit at 600 rather than 700 — at 700 Poppins turns heavy and closes up
+ * its counters, which costs legibility in exactly the poor light this app is
+ * used in.
  */
 
 :root {
   --color-background: #ffffff;
-  --color-surface: #f2f4f6;
+  --color-surface: #f4f6f8;
   --color-surface-raised: #ffffff;
   --color-border: #5b6670;
+  /* Decorative separators, where the line is not the edge of a touch target. */
+  --color-border-soft: #d4dae0;
 
   --color-text: #14181c;
   --color-text-muted: #454e57;
@@ -37,7 +47,7 @@
 
   /* C.2 principle 2. 48 CSS px is 48dp with this viewport, which is the rule. */
   --touch-min: 48px;
-  --touch-primary: 64px;
+  --touch-primary: 60px;
 
   --space-1: 4px;
   --space-2: 8px;
@@ -46,13 +56,17 @@
   --space-5: 24px;
   --space-6: 32px;
 
-  /* Big enough to read at arm's length in poor light. */
+  --font-size-xs: 13px;
   --font-size-sm: 15px;
   --font-size-base: 17px;
-  --font-size-lg: 20px;
+  --font-size-lg: 19px;
   --font-size-xl: 24px;
 
-  --radius: 10px;
+  --radius-sm: 10px;
+  --radius: 14px;
+  --radius-pill: 999px;
+
+  --border-width: 1.5px;
 
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-top: env(safe-area-inset-top, 0px);
@@ -72,11 +86,13 @@ body,
 }
 
 body {
-  background: var(--color-background);
+  background: var(--color-surface);
   color: var(--color-text);
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   font-size: var(--font-size-base);
-  line-height: 1.45;
+  font-weight: 400;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
   /* The inspector is walking; text selection on tap is never what they meant. */
   -webkit-user-select: none;
   user-select: none;
@@ -94,12 +110,15 @@ h1,
 h2,
 h3 {
   margin: 0;
-  line-height: 1.25;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
 }
 
 h1 {
   font-size: var(--font-size-xl);
 }
+
 h2 {
   font-size: var(--font-size-lg);
 }
@@ -117,13 +136,22 @@ button {
   outline-offset: 2px;
 }
 
+/* A small, wide-tracked label. Used for counters and section captions. */
+.eyebrow {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
 /* --- layout --------------------------------------------------------------- */
 
 .app-shell {
   display: flex;
   flex-direction: column;
   height: 100%;
-  max-width: 900px;
+  max-width: 720px;
   margin: 0 auto;
   background: var(--color-background);
 }
@@ -132,7 +160,7 @@ button {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding: calc(var(--safe-top) + var(--space-2)) var(--space-3) var(--space-2);
+  padding: calc(var(--safe-top) + var(--space-3)) var(--space-4) var(--space-3);
   background: var(--color-brand);
   color: var(--color-brand-text);
   position: sticky;
@@ -150,6 +178,7 @@ button {
   min-width: 0;
   font-size: var(--font-size-lg);
   font-weight: 600;
+  letter-spacing: -0.01em;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -158,8 +187,9 @@ button {
 .app-header__back {
   flex: 0 0 auto;
   min-width: var(--touch-min);
+  margin-left: calc(var(--space-2) * -1);
   padding: var(--space-2);
-  font-size: var(--font-size-xl);
+  font-size: 26px;
   line-height: 1;
 }
 
@@ -169,7 +199,7 @@ button {
   -webkit-overflow-scrolling: touch;
   padding: var(--space-4);
   /* Room for the fixed action bar, so the last item is never trapped under it. */
-  padding-bottom: calc(var(--touch-primary) + var(--space-6));
+  padding-bottom: var(--space-6);
 }
 
 /*
@@ -183,7 +213,8 @@ button {
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4) calc(var(--safe-bottom) + var(--space-3));
   background: var(--color-surface-raised);
-  border-top: 2px solid var(--color-border);
+  border-top: 1px solid var(--color-border-soft);
+  box-shadow: 0 -8px 24px -16px rgba(20, 24, 28, 0.5);
 }
 
 /* --- buttons -------------------------------------------------------------- */
@@ -196,11 +227,12 @@ button {
   min-height: var(--touch-min);
   min-width: var(--touch-min);
   padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
   background: var(--color-surface-raised);
   color: var(--color-text);
-  font-weight: 600;
+  font-size: var(--font-size-base);
+  font-weight: 500;
   text-align: center;
 }
 
@@ -211,6 +243,17 @@ button {
   background: var(--color-brand);
   color: var(--color-brand-text);
   font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+.button--secondary {
+  min-height: var(--touch-primary);
+  flex: 0 0 auto;
+}
+
+.button--wide {
+  width: 100%;
+  min-height: var(--touch-primary);
 }
 
 .button--ghost {
@@ -220,8 +263,104 @@ button {
 }
 
 .button:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* --- language toggle ------------------------------------------------------ */
+
+.language-toggle {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+  /* On a screen with no header title the controls sit right, rather than
+     floating in the gap a title would have filled. */
+  margin-left: auto;
+}
+
+.language-toggle__option {
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+/* Marked by weight and a filled pill, not by colour alone. */
+.language-toggle__option[aria-pressed='true'] {
+  background: rgba(255, 255, 255, 0.18);
+  font-weight: 600;
+  opacity: 1;
+}
+
+/* --- sync indicator ------------------------------------------------------- */
+
+.sync-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+  min-width: var(--touch-min);
+  min-height: var(--touch-min);
+  padding: var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+}
+
+.sync-indicator__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  /* A light ring keeps the dot readable on the dark header in every state. */
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
+  flex-shrink: 0;
+}
+
+/*
+ * Flow E asks for a small, always-visible status icon. On a narrow phone the
+ * coloured dot carries it alone — the word would crowd out the room name, and
+ * the state stays available to a screen reader through the button's label.
+ */
+.sync-indicator__label {
+  display: none;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+@media (min-width: 520px) {
+  .sync-indicator__label {
+    display: inline;
+  }
+}
+
+.element-title {
+  margin: var(--space-1) 0 var(--space-4);
+}
+
+/* Vertical rhythm on the element screen: one gap between blocks, set here so
+   the components stay free of layout spacing. */
+.app-content > .notice,
+.app-content > .photo-strip,
+.app-content > .button--wide,
+.app-content > .disclosure {
+  margin-top: var(--space-4);
+}
+
+.app-content > .photo-strip + .button--wide {
+  margin-top: 0;
+}
+
+.app-content > .button--wide + .field {
+  margin-top: var(--space-4);
 }
 
 /* --- condition buttons ---------------------------------------------------- */
@@ -234,7 +373,7 @@ button {
 .condition-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 @media (min-width: 560px) {
@@ -245,26 +384,27 @@ button {
 
 .condition-button {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--space-1);
+  gap: var(--space-2);
   min-height: var(--touch-primary);
   padding: var(--space-3);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
   background: var(--color-surface-raised);
   color: var(--color-text);
   font-size: var(--font-size-base);
-  font-weight: 600;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .condition-button[aria-pressed='true'] {
   background: var(--fill);
   color: var(--fill-text);
-  border-color: var(--color-text);
-  /* A second, non-colour signal that this is the chosen one. */
-  box-shadow: inset 0 0 0 2px var(--color-surface-raised);
+  border-color: var(--fill);
+  font-weight: 600;
+  /* A ring rather than a colour change alone marks the chosen one. */
+  box-shadow: 0 0 0 2px var(--color-surface-raised), 0 0 0 4px var(--color-text);
 }
 
 .condition-button__check {
@@ -277,7 +417,7 @@ button {
 .room-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
   list-style: none;
   margin: 0;
   padding: 0;
@@ -290,7 +430,7 @@ button {
   width: 100%;
   min-height: var(--touch-primary);
   padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--color-border);
+  border: var(--border-width) solid var(--color-border-soft);
   border-radius: var(--radius);
   background: var(--color-surface-raised);
   text-align: left;
@@ -303,12 +443,14 @@ button {
 
 .room-card__name {
   display: block;
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .room-card__meta {
   display: block;
+  margin-top: 2px;
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
 }
@@ -316,14 +458,13 @@ button {
 .status-chip {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-3);
-  border: 2px solid var(--color-border);
-  border-radius: 999px;
+  padding: 6px var(--space-3);
+  border-radius: var(--radius-pill);
   background: var(--chip-fill, var(--color-surface));
   color: var(--chip-text, var(--color-text));
-  font-size: var(--font-size-sm);
-  font-weight: 700;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.02em;
   white-space: nowrap;
 }
 
@@ -334,25 +475,25 @@ button {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
 .progress__bar {
-  height: 12px;
-  border: 2px solid var(--color-border);
-  border-radius: 999px;
-  background: var(--color-surface);
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-border-soft);
   overflow: hidden;
 }
 
 .progress__fill {
   height: 100%;
+  border-radius: var(--radius-pill);
   background: var(--color-condition-good);
 }
 
 .progress__label {
   font-size: var(--font-size-sm);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-muted);
 }
 
@@ -366,6 +507,7 @@ button {
 }
 
 .field__label {
+  font-size: var(--font-size-sm);
   font-weight: 600;
 }
 
@@ -374,15 +516,17 @@ button {
 .field__select {
   min-height: var(--touch-min);
   padding: var(--space-3);
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-sm);
   background: var(--color-surface-raised);
   color: var(--color-text);
   font: inherit;
+  font-size: var(--font-size-base);
 }
 
 .field__textarea {
   min-height: calc(var(--touch-min) * 2);
+  line-height: 1.45;
   resize: vertical;
 }
 
@@ -396,9 +540,8 @@ button {
 
 /* Sub-attributes are collapsed by default so they stay out of the fast path. */
 .disclosure {
-  border: 2px solid var(--color-border);
+  border: var(--border-width) solid var(--color-border-soft);
   border-radius: var(--radius);
-  margin-bottom: var(--space-4);
   background: var(--color-surface-raised);
 }
 
@@ -407,7 +550,9 @@ button {
   align-items: center;
   min-height: var(--touch-min);
   padding: var(--space-3) var(--space-4);
+  font-size: var(--font-size-sm);
   font-weight: 600;
+  color: var(--color-text-muted);
   cursor: pointer;
   list-style: none;
 }
@@ -417,24 +562,27 @@ button {
 }
 
 .disclosure__body {
-  padding: 0 var(--space-4) var(--space-4);
+  padding: 0 var(--space-4) var(--space-3);
 }
 
 /* --- photos --------------------------------------------------------------- */
 
 .photo-strip {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
   flex-wrap: wrap;
-  margin-bottom: var(--space-4);
+}
+
+.photo-strip:not(:empty) {
+  margin-bottom: var(--space-3);
 }
 
 .photo-thumb {
   position: relative;
-  width: 96px;
-  height: 96px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius);
+  width: 88px;
+  height: 88px;
+  border: var(--border-width) solid var(--color-border-soft);
+  border-radius: var(--radius-sm);
   background: var(--color-surface);
   overflow: hidden;
 }
@@ -453,23 +601,30 @@ button {
   width: var(--touch-min);
   height: var(--touch-min);
   border: none;
-  border-bottom-left-radius: var(--radius);
+  border-bottom-left-radius: var(--radius-sm);
   background: var(--color-danger);
   color: var(--color-text-inverse);
-  font-weight: 700;
+  font-weight: 600;
+}
+
+/* The camera is the required next step when a condition demands a photo. */
+.button--photo-required {
+  border-color: var(--color-condition-damaged);
+  border-width: 2px;
+  color: var(--color-condition-damaged);
+  font-weight: 600;
 }
 
 .notice {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  border: 2px solid var(--color-border);
-  border-left-width: 8px;
-  border-radius: var(--radius);
-  margin-bottom: var(--space-4);
+  border-radius: var(--radius-sm);
   background: var(--color-surface);
-  font-weight: 600;
+  border-left: 4px solid var(--color-border);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
 }
 
 .notice--required {
@@ -496,31 +651,15 @@ button {
 
 /* --- test environment banner (docs/environments.md D.5) ------------------- */
 
-/*
- * Flow E asks for a small, always-visible status icon. On a narrow phone the
- * coloured dot carries it alone — the word would crowd out the room name, and
- * the state stays available to a screen reader through the button's label.
- */
-.sync-indicator__label {
-  display: none;
-  font-size: var(--font-size-sm);
-  font-weight: 700;
-}
-
-@media (min-width: 520px) {
-  .sync-indicator__label {
-    display: inline;
-  }
-}
-
 .test-banner {
   padding: var(--space-2) var(--space-4);
   background: var(--color-danger);
   color: var(--color-text-inverse);
-  font-size: var(--font-size-sm);
-  font-weight: 700;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   text-align: center;
-  letter-spacing: 0.04em;
 }
 
 @media (prefers-reduced-motion: reduce) {

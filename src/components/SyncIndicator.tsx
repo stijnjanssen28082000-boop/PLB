@@ -26,22 +26,13 @@ export function SyncIndicator({ pendingCount }: { pendingCount: number }) {
   return (
     <button
       type="button"
-      className="button button--ghost"
+      className="sync-indicator"
       aria-label={`${t(`sync.${state}`)} — ${t(`sync.${state}Explanation`)}`}
-      style={{ color: 'inherit', gap: 8, paddingInline: 10 }}
     >
       <span
+        className="sync-indicator__dot"
         aria-hidden="true"
-        style={{
-          width: 14,
-          height: 14,
-          borderRadius: '50%',
-          background: STATE_COLOR[state],
-          // A white ring keeps the dot visible on the dark header whichever
-          // state it is in.
-          boxShadow: `0 0 0 2px ${COLORS.textInverse}`,
-          flexShrink: 0,
-        }}
+        style={{ background: STATE_COLOR[state] }}
       />
       <span className="sync-indicator__label">{t(`sync.${state}`)}</span>
     </button>
