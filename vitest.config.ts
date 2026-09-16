@@ -11,5 +11,7 @@ export default defineConfig({
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],
+    // Vite's builtin list predates node:sqlite, so it tries to bundle it.
+    server: { deps: { external: [/^node:sqlite$/] } },
   },
 });
